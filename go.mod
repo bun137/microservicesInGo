@@ -2,4 +2,4 @@ module github.com/bun137/microservicesInGo
 
 go 1.22.1
 
-require github.com/gorilla/mux v1.8.1 // indirect
+require github.com/go-chi/chi/v5 v5.0.12
