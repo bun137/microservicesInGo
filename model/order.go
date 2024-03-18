@@ -6,7 +6,7 @@ import (
 )
 
 type Order struct {
-  OrderID unit64 `json:"order_id"`
+  OrderID uint64 `json:"order_id"`
   CustomerID uuid.UUID `json:"customer_id"`
   LineItems []LineItem `json:"line_items"`
   CreatedAt *time.Time `json:"created_at"`
@@ -16,6 +16,6 @@ type Order struct {
 
 type LineItem struct {
 LineItem uuid.UUID `json:"line_item"`
-Quantity unit `json:"quantity"`
+Quantity uint `json:"quantity"`
 Price uint `json:"price"`
 }
