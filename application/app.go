@@ -3,7 +3,8 @@ package application
 import ("net/http"
 "context"
 "fmt"
-"github.com/redis/redis-go/v9"
+"github.com/redis/go-redis/v9"
+  "time"
 )
 
 type App struct {
@@ -28,10 +29,34 @@ func (a *App) Start(ctx context.Context) error {
   if err != nil {
     return fmt.Errorf("redis error: %w", err)
   }
+  
+  defer func(){
+    err := a.rdb.Close()
+    if err != nil {
+      fmt.Println("redis error: ", err)
+    }
+  }()
+
   fmt.Println("redis connected")
+
+  ch := make(chan error, 1)
+
+  go func() {
   err = server.ListenAndServe()
   if err != nil {
-    return fmt.Errorf("server error: %w", err)
+    ch <- fmt.Errorf("server error: %w", err)
   }
+    close(ch)
+ }()
+
+  select{
+ case err = <-ch:
+    return err
+  case <-ctx.Done():
+    timeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+    return server.Shutdown(timeout)
+}
+
   return nil
 }
