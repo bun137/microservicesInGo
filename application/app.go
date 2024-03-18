@@ -24,7 +24,12 @@ func (a *App) Start(ctx context.Context) error {
     Addr: ":3000",
     Handler: a.router,
   }
-  err := server.ListenAndServe()
+  err:= a.rdb.Ping(ctx).Err()
+  if err != nil {
+    return fmt.Errorf("redis error: %w", err)
+  }
+  fmt.Println("redis connected")
+  err = server.ListenAndServe()
   if err != nil {
     return fmt.Errorf("server error: %w", err)
   }
